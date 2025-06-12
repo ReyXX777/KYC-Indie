@@ -1,0 +1,106 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+# Built files and directories
+/build/
+.gradle/
+.idea/
+.kotlin/
+local.properties
+*.iml
+*.iws
+*.ipr
+/captures/
+.externalNativeBuild/
+.cxx/
+/out/
+/libs/
+
+# Specific IDE and OS files
+*.jar.old
+*.bak
+*.orig
+*.swp
+*.swo
+*.swn
+*.swnm
+*.swp
+*.swo
+*.swn
+*.swnm
+*~
+# macOS files
+.DS_Store
+.localized
+
+# Android specific
+/app/build/
+/gradle-wrapper/
+/gradle/wrapper/gradle-wrapper.properties
+/gradlew
+/gradlew.bat
+
+# Google Services (if applicable, though google-services.json is often committed)
+# google-services.json
+
+# If you have specific files that are generated and you don't want to commit
+# For example, if you generate keystores locally for signing
+# *.keystore
+# debug.keystore
+
+# For Android Studio's Instant Run (older versions, still good to have)
+/app/debug/
+/app/release/
+/app/intermediates/
+/app/generated/
+
+# Local configuration files
+# If you have a local.properties file that stores sensitive information (e.g., API keys)
+# local.properties
+
+# AVD files
+*.avd/
+*.ini
+
+# Test result files
+/test-results/
+/screenshots/
+
+# Log files
+*.log
+
+# Crashlytics/Fabric (if used)
+fabric.properties
+
+# Any other temporary or generated files you notice
+# For instance, if you see files like:
+# /.idea/workspace.xml
+# /.idea/libraries/
+# etc., you can add them explicitly if they are causing issues.
