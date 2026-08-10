@@ -11,7 +11,7 @@ class ChatViewModel : ViewModel() {
 
     private val model = GenerativeModel(
         modelName = "gemini-1.5-flash-002",
-        apiKey = "AIzaSyASrSfvDLvDldP_1_wuCwD6yQnYiA3tPAg"
+        apiKey =
     )
 
     private val _chatResponse = MutableStateFlow<String?>(null)
