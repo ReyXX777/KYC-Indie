@@ -1,6 +1,8 @@
 package com.tech.kyc.ui.screens
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.kyc.network.FoodItem
@@ -31,17 +33,21 @@ class MainViewModel : ViewModel() {
     private var searchJob: Job? = null
 
     fun fetchFoodData(query: String) {
-        // ✅ Cancel the previous search to avoid race conditions
         searchJob?.cancel()
+
+        if (query.isBlank()) {
+            foodList = emptyList()
+            isEmptyState = true
+            return
+        }
 
         searchJob = viewModelScope.launch {
             isLoading = true
             errorMessage = null
             isEmptyState = false
-            foodList = emptyList() // ✅ Reset list to avoid showing stale data
+            foodList = emptyList()
 
             try {
-                // ✅ Debouncing to avoid rapid API calls
                 delay(300)
 
                 val response = RetrofitClient.apiService.getFoodData(FoodRequest(query))
@@ -50,20 +56,18 @@ class MainViewModel : ViewModel() {
                     isEmptyState = true
                     errorMessage = "No results found for \"$query\""
                 } else {
-                    foodList = response.foods.map { food ->
-                        food.copy(photo = food.photo) // ✅ Ensure photo is mapped correctly
-                    } // ✅ FIXED: Added missing closing bracket here
+                    foodList = response.foods
                 }
             } catch (e: SocketTimeoutException) {
                 errorMessage = "Request timed out. Please try again."
             } catch (e: UnknownHostException) {
                 errorMessage = "No internet connection. Check your network and try again."
             } catch (e: IOException) {
-                errorMessage = "Network error: ${e.message}"
+                errorMessage = "Network error: ${e.localizedMessage ?: e.message}"
             } catch (e: HttpException) {
-                errorMessage = "Server error: ${e.message}"
+                errorMessage = "Server error: ${e.localizedMessage ?: e.message}"
             } catch (e: Exception) {
-                errorMessage = "Failed to load data: ${e.message}"
+                errorMessage = "Failed to load data: ${e.localizedMessage ?: e.message}"
             } finally {
                 isLoading = false
             }
