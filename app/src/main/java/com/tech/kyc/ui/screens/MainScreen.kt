@@ -3,17 +3,39 @@ package com.tech.kyc.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,15 +46,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.gson.Gson
-import com.tech.kyc.network.FoodItem
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel, chatViewModel: ChatViewModel, navController: NavController) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    chatViewModel: ChatViewModel,
+    navController: NavController
+) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var minimized by remember { mutableStateOf(true) }
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val isChatLoading by chatViewModel.isLoading.collectAsState()
+    val chatResponse by chatViewModel.chatResponse.collectAsState()
+    val chatError by chatViewModel.errorMessage.collectAsState()
 
     Box(
         modifier = Modifier
@@ -150,13 +177,14 @@ fun MainScreen(viewModel: MainViewModel, chatViewModel: ChatViewModel, navContro
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(top = 8.dp)
             ) {
-                items(viewModel.foodList.size) { index ->
+                items(
+                    items = viewModel.foodList,
+                    key = { it.foodName }
+                ) { foodItem ->
                     FoodItemCard(
-                        food = viewModel.foodList[index],
+                        food = foodItem,
                         navController = navController,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp) // Changed 'bottom' to 'custom'
-                            .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
             }
@@ -198,7 +226,7 @@ fun MainScreen(viewModel: MainViewModel, chatViewModel: ChatViewModel, navContro
                         exit = fadeOut()
                     ) {
                         Column {
-                            if (chatViewModel.isLoading.collectAsState().value) {
+                            if (isChatLoading) {
                                 LinearProgressIndicator(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -207,11 +235,12 @@ fun MainScreen(viewModel: MainViewModel, chatViewModel: ChatViewModel, navContro
                                 )
                             }
 
-                            chatViewModel.chatResponse.collectAsState().value?.let { response ->
-                                // Clean up markdown formatting
-                                val cleanResponse = response
-                                    .replace(Regex("[*_~-]"), "") // Remove asterisks, underscores, dashes, etc.
-                                    .replace(Regex("\\n{2,}"), "\n") // Remove excessive newlines
+                            chatResponse?.let { response ->
+                                val cleanResponse = remember(response) {
+                                    response
+                                        .replace(Regex("[*_~-]"), "")
+                                        .replace(Regex("\\n{2,}"), "\n")
+                                }
 
                                 Card(
                                     modifier = Modifier
@@ -234,8 +263,7 @@ fun MainScreen(viewModel: MainViewModel, chatViewModel: ChatViewModel, navContro
                                 }
                             }
 
-
-                            chatViewModel.errorMessage.collectAsState().value?.let { error ->
+                            chatError?.let { error ->
                                 Text(
                                     text = error,
                                     color = MaterialTheme.colorScheme.error,
