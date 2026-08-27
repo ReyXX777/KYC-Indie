@@ -2,9 +2,16 @@ package com.tech.kyc.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,18 +22,21 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.google.gson.Gson
 import com.tech.kyc.network.FoodItem
 
 @Composable
-fun FoodItemCard(food: FoodItem, navController: NavController,modifier: Modifier = Modifier) {
-    val foodJson = Gson().toJson(food)
+fun FoodItemCard(
+    food: FoodItem,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("food_list_screen") // ✅ Navigate with JSON
+            .clickable {
+                navController.navigate("food_list_screen")
             },
         elevation = CardDefaults.elevatedCardElevation()
     ) {
@@ -35,19 +45,18 @@ fun FoodItemCard(food: FoodItem, navController: NavController,modifier: Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // ✅ Load actual image or fallback to placeholder
             val painter: Painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(food.photo?.thumb ?: android.R.drawable.ic_menu_report_image) // ✅ Load actual image if available
-                    .crossfade(true) // ✅ Smooth transition effect
-                    .placeholder(android.R.drawable.ic_menu_report_image) // ✅ Placeholder while loading
-                    .error(android.R.drawable.ic_menu_report_image) // ✅ Fallback if loading fails
+                    .data(food.photo?.thumb ?: android.R.drawable.ic_menu_report_image)
+                    .crossfade(true)
+                    .placeholder(android.R.drawable.ic_menu_report_image)
+                    .error(android.R.drawable.ic_menu_report_image)
                     .build()
             )
 
             Image(
                 painter = painter,
-                contentDescription = "Food Image",
+                contentDescription = food.foodName,
                 modifier = Modifier
                     .height(150.dp)
                     .fillMaxWidth()
@@ -57,14 +66,12 @@ fun FoodItemCard(food: FoodItem, navController: NavController,modifier: Modifier
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ✅ Food name
             Text(
                 text = food.foodName,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
-            // ✅ Nutritional Information
             Text(
                 text = "Calories: ${food.calories} kcal",
                 style = MaterialTheme.typography.bodyMedium
